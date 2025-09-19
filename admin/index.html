@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UltraU Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .admin-badge {
+            background: #f3f4f6;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: #374151;
+        }
+
+        .btn:hover {
+            background: #f9fafb;
+        }
+
+        .btn-primary {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .btn-primary:hover {
+            background: #b91c1c;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-subtitle {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .metric-card.revenue::before { background: #3b82f6; }
+        .metric-card.commission::before { background: #10b981; }
+        .metric-card.events::before { background: #8b5cf6; }
+        .metric-card.users::before { background: #f59e0b; }
+        .metric-card.live::before { background: #ef4444; }
+        .metric-card.attendees::before { background: #6366f1; }
+        .metric-card.scanner::before { background: #8b5cf6; }
+        .metric-card.validation::before { background: #f59e0b; }
+        .metric-card.vendor::before { background: #10b981; }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-subtitle {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .metric-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            opacity: 0.1;
+            font-size: 1.5rem;
+        }
+
+        .pending-section {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .pending-icon {
+            width: 48px;
+            height: 48px;
+            background: #f59e0b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+        }
+
+        .pending-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #92400e;
+        }
+
+        .pending-subtitle {
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+
+        .pending-description {
+            color: #92400e;
+            font-size: 0.875rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .management-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-subtitle {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .create-event-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .create-event-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .management-list {
+            list-style: none;
+        }
+
+        .management-item {
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+            transition: background 0.2s;
+        }
+
+        .management-item:hover {
+            background: #f3f4f6;
+        }
+
+        .item-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .recent-activity {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-value {
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .overview-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .overview-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .overview-metric {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .overview-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .overview-icon.events { background: #dbeafe; color: #3b82f6; }
+        .overview-icon.users { background: #d1fae5; color: #10b981; }
+        .overview-icon.tickets { background: #e0e7ff; color: #6366f1; }
+
+        .overview-content h3 {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .overview-content .value {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .platform-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-1px);
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .action-icon.monitor { background: #dbeafe; color: #3b82f6; }
+        .action-icon.mvp { background: #fef3c7; color: #f59e0b; }
+        .action-icon.sell { background: #d1fae5; color: #10b981; }
+        .action-icon.cashier { background: #fecaca; color: #ef4444; }
+        .action-icon.scanner { background: #e0e7ff; color: #8b5cf6; }
+
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .action-description {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .header-actions {
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='../'" style="text-decoration: none;">
+        ← Back to Home
+    </button>
+
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">U</div>
+            <span style="font-weight: 600;">UltraU</span>
+            <span class="admin-badge">📋 Admin Panel</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn">
+                📊 Box Office
+            </button>
+            <button class="btn">
+                📱 Scanner
+            </button>
+            <button class="btn-primary">
+                SG
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Admin Dashboard 🎯</h1>
+            <p class="dashboard-subtitle">Platform overview and management controls</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card revenue">
+                <div class="metric-icon">💰</div>
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-value">KES 213,440</div>
+                <div class="metric-subtitle">Click for breakdown by event</div>
+            </div>
+
+            <div class="metric-card commission">
+                <div class="metric-icon">📈</div>
+                <div class="metric-label">Commission Earned</div>
+                <div class="metric-value">KES 10,672</div>
+                <div class="metric-subtitle">Click for detailed breakdowns</div>
+            </div>
+
+            <div class="metric-card events">
+                <div class="metric-icon">📅</div>
+                <div class="metric-label">Total Events</div>
+                <div class="metric-value">5</div>
+                <div class="metric-subtitle">Click to manage events & assignments</div>
+            </div>
+
+            <div class="metric-card users">
+                <div class="metric-icon">👥</div>
+                <div class="metric-label">Active Users</div>
+                <div class="metric-value">14</div>
+                <div class="metric-subtitle">Click to manage users & roles</div>
+            </div>
+
+            <div class="metric-card live">
+                <div class="metric-icon">🔴</div>
+                <div class="metric-label">Live Events</div>
+                <div class="metric-value">5</div>
+                <div class="metric-subtitle">Real-time scanning data</div>
+            </div>
+
+            <div class="metric-card attendees">
+                <div class="metric-icon">🎫</div>
+                <div class="metric-label">Attendees</div>
+                <div class="metric-value">108</div>
+                <div class="metric-subtitle">View & manage all tickets</div>
+            </div>
+
+            <div class="metric-card scanner">
+                <div class="metric-icon">📱</div>
+                <div class="metric-label">Zone Scanner</div>
+                <div class="metric-value">Zone Validation</div>
+                <div class="metric-subtitle">Advanced zone-based access control</div>
+            </div>
+
+            <div class="metric-card validation">
+                <div class="metric-icon">✅</div>
+                <div class="metric-label">Oveit Scanner</div>
+                <div class="metric-value">Ticket Validation</div>
+                <div class="metric-subtitle">Professional check-in system</div>
+            </div>
+
+            <div class="metric-card vendor">
+                <div class="metric-icon">💳</div>
+                <div class="metric-label">Vendor Payment Requests</div>
+                <div class="metric-value">0</div>
+                <div class="metric-subtitle">Pending payment requests</div>
+            </div>
+        </div>
+
+        <div class="pending-section">
+            <div class="pending-icon">⏳</div>
+            <h3 class="pending-title">⚠️ Pending Events Approval</h3>
+            <p class="pending-subtitle">Events waiting for admin approval to go live</p>
+            <div style="margin: 1rem 0;">
+                <div style="font-size: 2rem; color: #6b7280;">⏰</div>
+                <p style="font-size: 1rem; font-weight: 600; color: #92400e; margin: 0.5rem 0;">No Pending Events</p>
+                <p class="pending-description">All event submissions have been reviewed.</p>
+                <p class="pending-description">Operators can create events with custom ticket types that need approval</p>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="management-section">
+                <h2 class="section-title">
+                    🔧 Platform Management
+                </h2>
+                <p class="section-subtitle">Administrative controls and oversight</p>
+                
+                <button class="create-event-btn">➕ Create New Event</button>
+
+                <ul class="management-list">
+                    <li class="management-item">
+                        <div class="item-icon">📋</div>
+                        <span>Manage All Events</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">🏢</div>
+                        <span>Box Office</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">💰</div>
+                        <span>Manage Payments</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">👤</div>
+                        <span>User Management</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">🔧</div>
+                        <span>CodeHEADi Management</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">🎫</div>
+                        <span>Scan Tickets</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">📱</div>
+                        <span>Zone Scanner</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">💵</div>
+                        <span>Cashier Sales</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">💳</div>
+                        <span>Wallet Top-up</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">🔍</div>
+                        <span>Scanning Services</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">📊</div>
+                        <span>Scanner Management</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">🏪</div>
+                        <span>Vendor Management</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">🏆</div>
+                        <span>Top 10 MVP</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">👑</div>
+                        <span>Create Admin Account</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">🎖️</div>
+                        <span>Top 10 MVP</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">🔑</div>
+                        <span>Create Admin Account</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">📈</div>
+                        <span>Advanced Analytics</span>
+                    </li>
+                    <li class="management-item">
+                        <div class="item-icon">⚙️</div>
+                        <span>Site Settings</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="recent-activity">
+                <h2 class="section-title">
+                    ⭐ Recent Activity
+                </h2>
+                <p class="section-subtitle">Latest platform activity and alerts</p>
+                
+                <div class="activity-item">
+                    <span>New user registrations today</span>
+                    <span class="activity-value">1</span>
+                </div>
+                
+                <div class="activity-item">
+                    <span>Tickets sold today</span>
+                    <span class="activity-value">0</span>
+                </div>
+                
+                <div class="activity-item">
+                    <span>Revenue today</span>
+                    <span class="activity-value">KES 0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="management-section">
+            <h2 class="section-title">
+                👁️ Platform Overview
+            </h2>
+            <p class="section-subtitle">Top performing events and key metrics</p>
+
+            <div class="overview-section">
+                <div class="overview-card">
+                    <div class="overview-metric">
+                        <div class="overview-icon events">📅</div>
+                        <div class="overview-content">
+                            <h3>Active Events</h3>
+                            <div class="value">5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overview-card">
+                    <div class="overview-metric">
+                        <div class="overview-icon users">👥</div>
+                        <div class="overview-content">
+                            <h3>Total Users</h3>
+                            <div class="value">14</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overview-card">
+                    <div class="overview-metric">
+                        <div class="overview-icon tickets">🎫</div>
+                        <div class="overview-content">
+                            <h3>Tickets Sold</h3>
+                            <div class="value">108</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin: 2rem 0 1rem 0; font-weight: 600;">Platform Actions</h3>
+            
+            <div class="platform-actions">
+                <div class="action-card">
+                    <div class="action-icon monitor">📊</div>
+                    <div class="action-title">Live Events Monitor</div>
+                    <div class="action-description">View real-time scanning activity</div>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon mvp">🏆</div>
+                    <div class="action-title">Top 10 MVP</div>
+                    <div class="action-description">Mark scanned tickets with medals</div>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon scanner">📱</div>
+                    <div class="action-title">Vendor Scanner</div>
+                    <div class="action-description">Fast cashless payment system</div>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon sell">💰</div>
+                    <div class="action-title">Sell</div>
+                    <div class="action-description">Sell products to customers</div>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-icon cashier">💳</div>
+                    <div class="action-title">Cashier</div>
+                    <div class="action-description">Manage customer wallets</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactivity
+        document.querySelectorAll('.metric-card, .management-item, .action-card').forEach(item => {
+            item.addEventListener('click', function() {
+                // Add click animation
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+                
+                console.log('Clicked:', this.textContent.trim());
+            });
+        });
+
+        // Create New Event button functionality
+        document.querySelector('.create-event-btn').addEventListener('click', function() {
+            alert('Create New Event functionality would be implemented here');
+        });
+
+        // Add hover effects
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-1px)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>
