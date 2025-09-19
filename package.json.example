@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "db:migrate": "drizzle-kit generate && drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:seed": "node scripts/seed-production.js",
+    "deploy": "npm run db:migrate && npm run build"
+  }
+}
